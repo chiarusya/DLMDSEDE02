@@ -1,0 +1,60 @@
+#map {
+    position: relative;
+    height: 99vh;
+}
+
+.overlay-container {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    align-items: center;
+    z-index: 1000;
+}
+
+.overlay-box {
+    background-color: rgba(255, 255, 255, 0.7);
+    padding: 10px;
+    border-radius: 5px;
+    margin-left: 10px;
+    display: flex;
+    align-items: center;
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+}
+
+#home-box {
+    cursor: pointer;
+    font-size: 24px;
+}
+
+#time-box {
+    font-family: 'Calibri', sans-serif;
+    font-size: 14px;
+    line-height: 24px;
+}
+
+.fas {
+    font-size: inherit;
+}
+
+/* Consolidated hover effect */
+.overlay-box:hover {
+    opacity: 1;
+}
+
+.aircraft-icon {
+    transform-origin: center;
+    opacity: 0.7;
+}
+
+.aircraft-icon img {
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5); /* Horizontal, vertical offsets, blur radius, and color */
+}
+
+.leaflet-tooltip {
+    background-color: rgba(255, 255, 255, 0.7); /* White background with 70% opacity */
+    border: none; /* Optional: removes the default border */
+    border-radius: 4px; /* Optional: adds rounded corners */
+    box-shadow: 0 1px 5px rgba(0,0,0,0.5); /* Optional: adds a slight shadow for better visibility */
+}

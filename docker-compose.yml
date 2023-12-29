@@ -1,0 +1,105 @@
+version: '3'
+services:
+  data-generator:
+    build: ./dataset
+    restart: always
+    container_name: dataset
+    volumes:
+      - shared_data:/shared_data  # Mount the directory to access the generated CSV file
+    networks:
+      - kafka-net
+
+  postgres:
+    image: postgres:latest
+    restart: always
+    container_name: adsb_db
+    environment:
+      POSTGRES_DB: adsb_db
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init_db:/docker-entrypoint-initdb.  # Check if the flight_data table exists # Create indexes
+    ports:
+      - "5432:5432"
+    networks:
+      - kafka-net      
+
+  zookeeper:
+    image: zookeeper
+    restart: always
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+    networks:
+      - kafka-net
+
+  kafka:
+    image: confluentinc/cp-kafka
+    environment:
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+      KAFKA_NUM_PARTITIONS: 18    
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    platform: linux/arm64/v8
+    container_name: kafka
+    depends_on:
+      - zookeeper
+      - data-generator
+    ports:
+      - "9092:9092"
+    networks:
+      - kafka-net
+
+  kafka-producer:
+    build: ./producer
+    restart: always
+    container_name: kafka-producer
+    ports:
+      - "8000:8000"
+    volumes:
+      - shared_data:/shared_data
+    depends_on:
+      - kafka
+    networks:
+      - kafka-net
+
+  kafka-consumer:
+    build: ./consumer
+    restart: on-failure
+    container_name: kafka-consumer
+    ports:
+      - "8001:8001"
+    depends_on:
+      - kafka
+      - postgres
+    networks:
+      - kafka-net
+
+  websocket-server:
+    build: ./webserver
+    restart: always
+    container_name: websocket-server
+    ports:
+      - "6789:6789"
+      - "8080:8080"
+    networks:
+      - kafka-net
+
+  frontend:
+    build: ./frontend
+    restart: always
+    container_name: frontend
+    ports:
+      - "5001:5000"  
+    networks:
+      - kafka-net      
+
+networks:
+  kafka-net:
+    external: true
+
+volumes:
+  shared_data:
+  postgres_data:
