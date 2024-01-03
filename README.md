@@ -34,3 +34,5 @@ Audit logs will be implemented throughout the project to enable performance moni
 Security and access control can be managed via Kafka's built-in security features like ACLs (Access Control Lists). Access to the Postgres DB can be set up based on the user role. Firewall rules can be used for network security. 
 
 Data Governance can be set up with the help of Kafka retention policies and Postgres DB data retention policies.
+
+<img src="https://github.com/chiarusya/DLMDSEDE02/blob/main/Frontend app screenshot.png" alt="Smaller Image" width="600" height="auto">
