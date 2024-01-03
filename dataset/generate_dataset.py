@@ -1,21 +1,24 @@
 import numpy as np
 import pandas as pd
 import random
-from geopy.distance import great_circle
 from math import atan2, radians, degrees, sin, cos, asin, sqrt
 from datetime import datetime
+import logging
 
 # Load the airports data from CSV
 airports_df = pd.read_csv('airports.csv')
 airlines_df = pd.read_csv('airlines.csv')
 aircraft_df = pd.read_csv('aircraft.csv')
 
-# Data-generator parameters # generates 1,000,000 records
+# Configure loggings
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+# Data-generator parameters # generates 3,000,000 records
 num_airports = 300
-num_airlines = 30
+num_airlines = 50
 num_aircraft = 20
 num_flights = 1000 
-data_points_per_flight = 1000
+data_points_per_flight = 3000
 flight_date = datetime(2023, 12, 14)
 
 # Pick random airports
@@ -136,11 +139,15 @@ def create_full_dataset(num_flights, data_points_per_flight, flight_date, all_co
     return all_flights_data
 
 # Generate the full dataset
+logging.info("Data Generation Started")
 full_dataset = create_full_dataset(num_flights, data_points_per_flight, flight_date, all_coordinates, airline_codes)
-# print(full_dataset.head(30))
+print(full_dataset.head(30))
 
+logging.info("Data Sorting Started")
 # Sort the dataset by timestamp and then by flight number
-sorted_dataset = full_dataset.sort_values(by=['timestamp', 'flight_number'])
+sorted_dataset = full_dataset.sort_values(by=['timestamp'])
 
+logging.info("Data Saving Started")
 # Saving the sorted dataset to a CSV file on the mounted shared volume
 sorted_dataset.to_csv('/shared_data/ADSB_dataset.csv', mode='w', index=False)
+logging.info("Data Saving Finished")

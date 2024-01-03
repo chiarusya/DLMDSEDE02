@@ -7,6 +7,7 @@ BEGIN
     ELSE
         -- If it does not exist, create the table
         CREATE TABLE public.flight_data (
+            id SERIAL PRIMARY KEY,  -- Add this line for Sequence ID
             timestamp TIMESTAMP,
             flight_number VARCHAR(255),
             ac_type VARCHAR(255),

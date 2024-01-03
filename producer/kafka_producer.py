@@ -25,7 +25,7 @@ if wait_for_kafka('kafka', 9092):
     producer = KafkaProducer(bootstrap_servers=[KAFKA_SERVER],
                             value_serializer=lambda x: json.dumps(x).encode('utf-8'))
    
-    def read_csv_in_chunks(csv_file_path, chunk_size=1000):
+    def read_csv_in_chunks(csv_file_path, chunk_size=7000):
         with open(csv_file_path, mode='r') as file:
             reader = csv.DictReader(file)
             while True:
@@ -42,7 +42,7 @@ if wait_for_kafka('kafka', 9092):
         # Flush the messages
         producer.flush()
 
-    def main(csv_file_path, delay=3):
+    def main(csv_file_path, delay=1):
         while True:  # Infinite loop to simulate continuous data streaming
             for chunk in read_csv_in_chunks(csv_file_path):
                 # Process each chunk (batch) of data

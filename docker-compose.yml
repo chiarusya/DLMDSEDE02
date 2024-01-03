@@ -2,7 +2,7 @@ version: '3'
 services:
   data-generator:
     build: ./dataset
-    restart: always
+    restart: on-failure:2
     container_name: dataset
     volumes:
       - shared_data:/shared_data  # Mount the directory to access the generated CSV file
@@ -19,7 +19,7 @@ services:
       POSTGRES_PASSWORD: admin
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./init_db:/docker-entrypoint-initdb.  # Check if the flight_data table exists # Create indexes
+      - ./init_db:/docker-entrypoint-initdb.d  # Check if the flight_data table exists # Create indexes
     ports:
       - "5432:5432"
     networks:
@@ -87,6 +87,22 @@ services:
     networks:
       - kafka-net
 
+  data-server:
+    build: ./dataserver 
+    restart: on-failure:5
+    container_name: data-server
+    environment:
+      - DB_HOST=postgres
+      - DB_USER=admin
+      - DB_PASSWORD=admin
+      - DB_NAME=adsb_db
+    depends_on:
+      - postgres  
+      - kafka-consumer
+      - kafka-producer
+      - websocket-server
+    networks:
+      - kafka-net
   frontend:
     build: ./frontend
     restart: always
